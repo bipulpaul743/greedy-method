@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdbool.h>
+#include<string.h>
 struct item {
     char id;
     double profit;
@@ -7,6 +8,9 @@ struct item {
 };
 struct item x[] = {{'A',100,2},{'B',19,1},{'C',27,2},{'D',25,1},{'E',15,3}};
 int n = 5;
+
+struct item original[5]; // To store original job order
+
 void bubble() {
     for(int i=0; i<n-1; i++) {
         for(int j=0; j<n-1-i; j++) {
@@ -38,6 +42,8 @@ void jobScheduling() {
     int maxD = getMaxDeadline();
     bool slot[maxD+1];
     char y[maxD+1];
+    double v[20] = {0.0};
+    // for(int i=0; i<n; i++) v[i] = 0.0; // init to 0
     double profit = 0.0;
     int i;
     for(i=1; i<=maxD; i++) {
@@ -50,6 +56,14 @@ void jobScheduling() {
                 profit = profit + x[i].profit;
                 slot[j] = true;
                 y[j] = x[i].id;
+
+                // Find index in original array
+                for(int k = 0; k < n; k++) {
+                    if(x[i].id == original[k].id) {
+                        v[k] = 1.0;
+                        break;
+                    }
+                }
                 break;
             }
         }
@@ -61,10 +75,20 @@ void jobScheduling() {
         // }
     }
     printf("\nTotal profit = %.2lf\n",profit);
+    printf("Solution vector = < ");
+    for(i=0; i<n; i++) {
+        printf("%.2f",v[i]);
+        if(i != n-1) printf(", ");
+    }
+    printf(" >");
 }
 int main() {
+    memcpy(original, x, sizeof(x)); // Save original job order
+
+    printf("Original Jobs: ");
     display();
     bubble();
+    printf("Sorted by Profit: ");
     display();
     jobScheduling();
 
